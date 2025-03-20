@@ -2,18 +2,12 @@ import Link from "next/link";
 import Seo from "../components/Seo";
 import { useRouter } from "next/router";
 
+const API_KEY = process.env.API_KEY;
+
 export default function Home({ results }) {
   const router = useRouter();
   const onClick = (id, title) => {
-    router.push(
-      {
-        pathname: `/movies/${id}`,
-        query: {
-          title,
-        },
-      },
-      `/movies/${id}`
-    );
+    router.push(`/movies/${title}/${id}`);
   };
 
   return (
@@ -30,16 +24,8 @@ export default function Home({ results }) {
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
           />
           <h4>
-            <Link
-              href={{
-                pathname: `/movies/${movie.id}`,
-                query: {
-                  title: movie.title,
-                },
-              }}
-              as={`/movies/${movie.id}`}
-            >
-              <a>{movie.title} </a>
+            <Link href={`/movies/${movie.title}/${movie.id}`}>
+              <a>{movie.title}</a>
             </Link>
           </h4>
         </div>
@@ -74,7 +60,7 @@ export default function Home({ results }) {
 
 export async function getServerSideProps() {
   const { results } = await (
-    await fetch(`http://localhost:3000/api/movies`)
+    await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`)
   ).json();
   return {
     props: {
